@@ -14,19 +14,21 @@ namespace LeapExample
         public static List<string> names;
         static Controller controller;
         static SampleListener listener;
+        public static bool iRrunning = false;
         static void Main(string[] args)
         {
 
             try
             {
+                int i = 0;
                 myConnector = new ConnectorHub.ConnectorHub();
-                
-                myConnector.init();
+
+                myConnector.Init();
                 setValueNames();
-               
-                myConnector.startRecordingEvent += MyConnector_startRecordingEvent;
-                myConnector.stopRecordingEvent += MyConnector_stopRecordingEvent;
-                
+
+                myConnector.StartRecordingEvent += MyConnector_startRecordingEvent;
+                myConnector.StopRecordingEvent += MyConnector_stopRecordingEvent;
+
 
             }
             catch
@@ -39,7 +41,7 @@ namespace LeapExample
             listener = new SampleListener();
             controller.Connect += listener.OnServiceConnect;
             controller.Device += listener.OnConnect;
-            
+            controller.FrameReady += listener.OnFrame;
 
             
 
@@ -57,11 +59,14 @@ namespace LeapExample
         private static void MyConnector_stopRecordingEvent(object sender)
         {
             controller.FrameReady -= listener.OnFrame;
+            listener.isRunning = false;
+            
         }
 
         private static  void MyConnector_startRecordingEvent(object sender)
         {
             controller.FrameReady += listener.OnFrame;
+            listener.isRunning = true;
         }
 
         public static void setValueNames()
@@ -236,7 +241,7 @@ namespace LeapExample
             names.Add("LEFT_HAND_TYPE_PINKY_JOINT_TIPY");
             names.Add("LEFT_HAND_TYPE_PINKY_JOINT_TIPZ");
 
-            myConnector.setValuesName(names);
+            myConnector.SetValuesName(names);
 
         }
     }
